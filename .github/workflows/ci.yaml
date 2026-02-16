@@ -39,7 +39,7 @@ jobs:
            
       - name: Clone GitOps Repo
         run: |
-          git clone https://github.com/henria21/gitops-application.git
+          git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@henria21/gitops-application.git
           cd gitops-application
 
       - name: Update Helm values file
