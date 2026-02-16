@@ -36,3 +36,27 @@ jobs:
         with:
            push: true
            tags: henria/ci_pipline_1:${{ github.sha }}
+           
+      - name: Clone GitOps Repo
+        run: |
+          git clone https://github.com/henria21/gitops-application.git
+          cd gitops-application
+
+      - name: Update Helm values file
+        run: |
+          cd gitops-application
+
+          if [ "${{ github.ref_name }}" = "dev" ]; then
+            VALUES_FILE="charts/myapp/values-dev.yaml"
+          else
+            VALUES_FILE="charts/myapp/values-prod.yaml"
+          fi
+
+          sed -i "s/tag:.*/tag: \"${{ steps.vars.outputs.SHA_TAG }}\"/" $VALUES_FILE
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add $VALUES_FILE
+          git commit -m "Update image tag to ${{ steps.vars.outputs.SHA_TAG }}"
+          git push
